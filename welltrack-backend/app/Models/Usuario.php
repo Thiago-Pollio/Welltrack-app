@@ -22,7 +22,30 @@ class Usuario extends Authenticatable
         'email',
         'password',
         'fechaNac',
+        'avatar',
+        'pomodoros_completados',
     ];
 
     protected $hidden = ['password'];
+
+    public function posts()
+{
+    return $this->hasMany(Post::class, 'idUsuario', 'idUsuario');
+}
+
+public function comentarios()
+{
+    return $this->hasMany(Comentario::class, 'idUsuario', 'idUsuario');
+}
+
+public function likes()
+{
+    return $this->hasMany(Like::class, 'idUsuario', 'idUsuario');
+}
+
+public function insignias()
+{
+    return $this->hasMany(UsuarioInsignia::class, 'idUsuario', 'idUsuario')
+        ->with('insignia');
+}
 }

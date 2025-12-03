@@ -22,6 +22,7 @@ class EventoController extends Controller
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
             'etiqueta' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:20',
         ]);
 
         $evento = Evento::create([
@@ -40,7 +41,7 @@ class EventoController extends Controller
             return response()->json(['mensaje' => 'No autorizado'], Response::HTTP_FORBIDDEN);
         }
 
-        $evento->update($request->only(['titulo', 'descripcion', 'fecha_inicio', 'fecha_fin', 'etiqueta']));
+        $evento->update($request->only(['titulo', 'descripcion', 'fecha_inicio', 'fecha_fin', 'etiqueta', 'color']));
 
         return response()->json(['mensaje' => 'Evento actualizado', 'evento' => $evento], Response::HTTP_OK);
     }

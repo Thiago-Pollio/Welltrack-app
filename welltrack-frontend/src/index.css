@@ -1,3 +1,197 @@
+/* :root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+@keyframes caer {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+    box-shadow: 0 0 0px rgba(16, 185, 129, 0);
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0px rgba(16, 185, 129, 0);
+  }
+}
+
+.insignia-pop {
+  animation: popIn 0.45s ease-out forwards;
+}
+
+/* .insignia-pop {
+  animation: badgePop 0.6s ease-out forwards;
+} */
+
+/* @keyframes badgePop {
+  0% { transform: scale(0.6); opacity: 0.2; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+
+.fc-mini-header {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.fc-mini-day {
+  transition: background 0.25s ease;
+}
+
+.fc-mini-day:hover {
+  background: rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  height: auto;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+background-color: transparent !important;
+overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.fc-mini-header {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.fc-mini-day {
+  transition: background 0.25s ease;
+}
+
+.fc-mini-day:hover {
+  background: rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradientAnimation 12s ease infinite;
+}
+
+@keyframes gradientSlow {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.animate-gradient-slow {
+  animation: gradientSlow 28s ease-in-out infinite;
+}
+
+.fondo-suave-contenedor {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 20px;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.06),
+    0 0 60px rgba(255, 210, 240, 0.45);
+}
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -68,3 +262,350 @@ button:focus-visible {
   }
 }
 
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.4s ease-in-out;
+} */
+
+/* ======================= fullCalendar ======================= */
+/* .fc {
+  --fc-border-color: #e8dcc9;
+  --fc-button-bg-color: #91b088;
+  --fc-button-border-color: #91b088;
+  --fc-button-text-color: #fff;
+  --fc-button-hover-bg-color: #57a773;
+  --fc-button-hover-border-color: #57a773;
+  --fc-today-bg-color: #91b088;
+  --fc-page-bg-color: #fffdf6;
+  --fc-neutral-bg-color: #f1eade;
+  --fc-event-bg-color: #91b088;
+  --fc-event-border-color: #91b088;
+  --fc-event-text-color: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  transition: all 0.3s ease;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2e2e2e;
+}
+
+.fc .fc-toolbar-chunk {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fc .fc-daygrid-day-number {
+  font-weight: 500;
+  color: #333;
+}
+
+.fc .fc-col-header-cell-cushion {
+  color: #333 !important; 
+  font-weight: 500;
+}
+
+.fc .fc-event-title {
+  color: #333 !important;
+}
+
+.fc .fc-day-today {
+  background-color: #91b0881a !important;
+  border: 2px solid #91b088 !important;
+  border-radius: 8px;
+  color: #333 !important;
+}
+
+.fc .fc-daygrid-day:hover {
+  background-color: #f1eade;
+  cursor: pointer;
+}
+
+.fc .fc-button {
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-radius: 8px !important;
+  margin: 0 4px !important;
+  padding: 0.4rem 0.8rem !important;
+}
+
+.fc .fc-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.95);
+}
+
+.fc .fc-event {
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 2px 6px !important;
+}
+
+.fc .fc-event-time {
+  color: inherit !important;
+  font-weight: 500;
+} */
+
+/* ======================= 🌙 MODO OSCURO ======================= */
+/* @media (prefers-color-scheme: dark) {
+  .fc {
+    --fc-border-color: #2f2f2f;
+    --fc-button-bg-color: #57a773;
+    --fc-button-border-color: #57a773;
+    --fc-button-text-color: #fff;
+    --fc-button-hover-bg-color: #6bbf8e;
+    --fc-today-bg-color: #91b088;
+    --fc-page-bg-color: #1f1f1f;
+    --fc-neutral-bg-color: #2a2a2a;
+    --fc-event-bg-color: #6bbf8e;
+    --fc-event-border-color: #6bbf8e;
+    --fc-event-text-color: #fff;
+    color: #e5e5e5;
+  }
+
+  .fc .fc-toolbar-title {
+    color: #f1f1f1;
+  }
+
+  .fc .fc-daygrid-day-number {
+    color: #ddd;
+  }
+
+  .fc .fc-day-today {
+    background-color: #91b08833 !important;
+    border: 2px solid #91b088 !important;
+    
+  }
+
+  .fc .fc-daygrid-day:hover {
+    background-color: #333;
+  }
+
+  .fc .fc-button {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.18s ease-out;
+}
+
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.35s ease-out;
+}
+
+@keyframes fadeSoft {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+.animate-fadeSoft {
+  animation: fadeSoft 0.25s ease-out;
+} */
+ 
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- RESET GLOBAL CON TU PALETA EARTH --- */
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Aplicamos los colores base de tu paleta */
+  color: #121F15; /* Texto oscuro (Dark Jungle) */
+  background-color: #F7F5EF; /* Fondo crema (Porcelain) */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Eliminamos estilos agresivos de botones por defecto para que manden tus componentes */
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Enlaces base */
+a {
+  font-weight: 500;
+  color: #58a774; /* Jungle Green */
+  text-decoration: inherit;
+  transition: color 0.25s;
+}
+a:hover {
+  color: #46865d;
+}
+
+/* --- ANIMACIONES CONSERVADAS --- */
+
+@keyframes caer {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+    box-shadow: 0 0 0px rgba(88, 167, 116, 0);
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(88, 167, 116, 0.4);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0px rgba(88, 167, 116, 0);
+  }
+}
+
+.insignia-pop {
+  animation: popIn 0.45s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slideLeft {
+  animation: slideLeft 0.35s ease-out;
+}
+
+/* --- UTILIDADES EXTRA --- */
+
+/* Scrollbar personalizada para que combine (opcional) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F5EF; 
+}
+::-webkit-scrollbar-thumb {
+  background: #bcdcc7; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #58a774; 
+}
+
+/* Clases para FullCalendar Mini (Conservadas) */
+.fc-mini-header {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #463b20;
+}
+
+.fc-mini-day {
+  transition: background 0.25s ease;
+}
+
+.fc-mini-day:hover {
+  background: rgba(88, 167, 116, 0.1);
+  cursor: pointer;
+}
+
+/* ======================= fullCalendar PERSONALIZADO ======================= */
+/* Actualizado para usar tu paleta Earth */
+.fc {
+  --fc-border-color: #dfd4b9;         /* Borde suave */
+  --fc-button-bg-color: #58a774;      /* Jungle Green */
+  --fc-button-border-color: #58a774;
+  --fc-button-text-color: #fff;
+  --fc-button-hover-bg-color: #46865d;
+  --fc-button-hover-border-color: #46865d;
+  --fc-today-bg-color: #eef6f1;       /* Fondo suave hoy */
+  --fc-page-bg-color: #ffffff;
+  --fc-neutral-bg-color: #f7f4ee;
+  --fc-event-bg-color: #58a774;
+  --fc-event-border-color: #58a774;
+  --fc-event-text-color: #fff;
+  
+  border-radius: 12px;
+  padding: 8px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #121F15;
+}
+
+.fc .fc-daygrid-day-number {
+  font-weight: 500;
+  color: #463b20;
+}
+
+.fc .fc-col-header-cell-cushion {
+  color: #463b20 !important; 
+  font-weight: 600;
+}
+
+.fc .fc-day-today {
+  background-color: #eef6f1 !important;
+  border: 2px solid #bcdcc7 !important;
+  border-radius: 8px;
+  color: #121F15 !important;
+}
+
+.fc .fc-daygrid-day:hover {
+  background-color: #f7f4ee;
+  cursor: pointer;
+}
+
+.fc .fc-button {
+  border-radius: 8px !important;
+  text-transform: capitalize;
+  font-weight: 500;
+  box-shadow: none !important;
+}

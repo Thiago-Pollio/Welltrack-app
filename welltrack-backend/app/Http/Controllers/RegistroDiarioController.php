@@ -22,14 +22,18 @@ class RegistroDiarioController extends Controller
         'notaOpcional' => 'nullable|string|max:500',
     ]);
 
+    
+
     $user = $request->user();
+
+    $fechaLocal = \Carbon\Carbon::parse($validated['fecha'], 'America/Argentina/Buenos_Aires')->format('Y-m-d');
 
     $registro = RegistroDiario::updateOrCreate(
         [
             'idUsuario' => $user->idUsuario,
-            'fecha' => $validated['fecha'],
+            'fecha' => $fechaLocal,
         ],
-        $validated
+        array_merge($validated, ['fecha' => $fechaLocal])
     );
 
     return response()->json([
@@ -56,15 +60,18 @@ class RegistroDiarioController extends Controller
     public function ultimo(Request $request)
 {
     $user = $request->user();
+    $hoyAr= now('America/Argentina/Buenos_Aires')->toDateString();
+
 
     $registro = RegistroDiario::where('idUsuario', $user->idUsuario)
-        ->orderBy('fecha', 'desc')
+        ->where('fecha', $hoyAr)
         ->first();
 
     if (!$registro) {
         return response()->json([
-            'mensaje' => 'No hay registros todavía'
-        ], 404);
+            'mensaje' => 'No hay registros todavía',
+            'registro' => null
+        ], 200);
     }
 
     return response()->json([

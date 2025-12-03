@@ -70,13 +70,21 @@ export default function Habito({ onClose }) {
             onChange={(e) => setMeta(e.target.value)}
             className="border p-2 rounded"
           />
-          <input
-            type="text"
-            placeholder="Unidad (ej. veces, min, km)"
-            value={unidad}
-            onChange={(e) => setUnidad(e.target.value)}
-            className="border p-2 rounded"
-          />
+          <select
+  value={unidad}
+  onChange={(e) => setUnidad(e.target.value)}
+  className="border p-2 rounded"
+  required
+>
+  <option value="">Seleccionar unidad</option>
+  <option value="veces">Veces</option>
+  <option value="minutos">Minutos</option>
+  <option value="horas">Horas</option>
+  <option value="pasos">Pasos</option>
+  <option value="ml">Mililitros (ml)</option>
+  <option value="km">Kilómetros (km)</option>
+  <option value="páginas">Páginas</option>
+</select>
           <button type="submit" className="bg-blue-700 text-white py-2 rounded hover:bg-blue-800 transition">
             Guardar
           </button>

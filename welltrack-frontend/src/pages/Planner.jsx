@@ -6,19 +6,41 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import EventoModal from "../components/EventoModal";
-import CalendarioEventos from "../components/CalendarioEventos";
+import { useEventos } from "../context/EventosContext";
+import EtiquetaFilter from "../components/EtiquetaFilter";
+
+import esLocale from '@fullcalendar/core/locales/es';
+
+// === ICONOS LUCIDE ===
+import {
+  Smile,
+  SmilePlus,
+  Meh,
+  Frown,
+  Angry,
+  AlertTriangle,
+  Moon,
+  HelpCircle,
+  Ban,
+  CheckCircle,
+  Sparkles
+} from "lucide-react";
+
+import { renderToString } from "react-dom/server";
 
 export default function Planner() {
   const [usuario, setUsuario] = useState(null);
   const [token, setToken] = useState(null);
   const [panelAbierto, setPanelAbierto] = useState(false);
-  const [eventos, setEventos] = useState([]);
+  const { eventos, setEventos } = useEventos();
   const [modalEvento, setModalEvento] = useState({
     abierto: false,
     evento: null,
+    diaSeleccionado: null,
   });
+  const [filtroEtiqueta, setFiltroEtiqueta] = useState("todas");
 
-  // ==================== CARGAR SESIÓN DEL BACKEND =====================
+  // ==================== SESIÓN ====================
   useEffect(() => {
     const storedUser = localStorage.getItem("usuarioActual");
     const storedToken = localStorage.getItem("token");
@@ -28,7 +50,7 @@ export default function Planner() {
     }
   }, []);
 
-  // ==================== CARGAR EVENTOS DEL USUARIO ====================
+  // ==================== CARGAR EVENTOS ====================
   useEffect(() => {
     if (!token) return;
 
@@ -41,49 +63,118 @@ export default function Planner() {
         const data = await res.json();
         setEventos(
           data.map((e) => ({
-            id: e.id,
+            idEvento: e.idEvento,
             title: e.titulo,
             start: e.fecha_inicio,
             end: e.fecha_fin,
+            backgroundColor: e.color,
+            borderColor: e.color,
             extendedProps: {
               descripcion: e.descripcion,
               etiqueta: e.etiqueta,
+              color: e.color,
             },
           }))
         );
       } catch (err) {
-        console.error(err);
+        console.error("Error al cargar eventos:", err);
       }
     };
 
     fetchEventos();
   }, [token]);
 
-  const abrirModal = (evento = null, diaSeleccionado = null) =>
+  // ==================== MODAL ====================
+  const abrirModal = (evento = null, diaSeleccionado = null) => {
     setModalEvento({ abierto: true, evento, diaSeleccionado });
+  };
 
-  const cerrarModal = () => setModalEvento({ abierto: false, evento: null });
+  const cerrarModal = () => {
+    setModalEvento({ abierto: false, evento: null, diaSeleccionado: null });
+  };
 
+  // ==================== GUARDAR / ELIMINAR ====================
   const guardarEvento = (evento) => {
-    // Después de guardar en backend, recargar eventos
     setEventos((prev) => {
-      const sinEl = prev.filter((e) => e.id !== evento.id);
+      if (evento.eliminar) {
+        return prev.filter((e) => e.idEvento !== evento.idEvento);
+      }
+      const sinEl = prev.filter((e) => e.idEvento !== evento.idEvento);
+
       return [
         ...sinEl,
         {
-          id: evento.id,
+          idEvento: evento.idEvento,
           title: evento.titulo,
           start: evento.fecha_inicio,
           end: evento.fecha_fin,
+          backgroundColor: evento.color,
+          borderColor: evento.color,
+          color: evento.color,
           extendedProps: {
             descripcion: evento.descripcion,
             etiqueta: evento.etiqueta,
+            color: evento.color,
           },
         },
       ];
     });
   };
 
+  // ==================== REGISTRO DIARIO ====================
+  const [registroDiario, setRegistroDiario] = useState([]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchRegistro = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/registro-diario", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await res.json();
+        setRegistroDiario(Array.isArray(data.registros) ? data.registros : []);
+
+      } catch (err) {
+        console.error("Error al cargar registro diario:", err);
+        setRegistroDiario([]);
+      }
+    };
+
+    fetchRegistro();
+  }, [token]);
+
+  // === MAPA ESTADO -> ICONO SVG ===
+  const estadoAnimoToIcon = {
+    "Feliz": renderToString(<Smile size={18} strokeWidth={2} />),
+    "Bien": renderToString(<SmilePlus size={18} strokeWidth={2} />),
+    "Indiferente": renderToString(<Meh size={18} strokeWidth={2} />),
+    "Triste": renderToString(<Frown size={18} strokeWidth={2} />),
+    "Enojo": renderToString(<Angry size={18} strokeWidth={2} />),
+    "Ansiedad": renderToString(<AlertTriangle size={18} strokeWidth={2} />),
+    "Apática": renderToString(<Moon size={18} strokeWidth={2} />),
+    "Insegura": renderToString(<HelpCircle size={18} strokeWidth={2} />),
+    "Irritable": renderToString(<Ban size={18} strokeWidth={2} />),
+    "Seguridad": renderToString(<CheckCircle size={18} strokeWidth={2} />),
+    "Entusiasmo": renderToString(<Sparkles size={18} strokeWidth={2} />),
+    "Sensible": renderToString(<Frown size={18} strokeWidth={2} />),
+  };
+
+  const registrosPorFecha = {};
+
+  registroDiario.forEach((reg) => {
+    if (!reg.fecha || !reg.estadoAnimo) return;
+
+    const primerEstado = reg.estadoAnimo.split(",")[0].trim();
+    const iconSvg = estadoAnimoToIcon[primerEstado];
+
+    if (iconSvg) {
+      registrosPorFecha[reg.fecha] = iconSvg;
+    }
+  });
+
+  // ==================== SIN SESIÓN ====================
   if (!usuario || !token) {
     return (
       <Layout>
@@ -105,56 +196,157 @@ export default function Planner() {
         onToggle={() => setPanelAbierto(!panelAbierto)}
       />
 
-      <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-green-700 text-center">
-          Planner 📅
-        </h2>
+      <div className="fixed inset-0 w-full h-full bg-[#F9F7F2] pointer-events-none" />
 
-        {/* === Sección principal: calendario + API externa === */}
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center">
-          {/* Calendario principal */}
-          <div className="flex-1 bg-white shadow-lg rounded-3xl p-6 border border-green-100 text-green-800">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+        Poner texto
+
+        <div className="flex flex-col lg:flex-row gap-10 justify-center">
+
+          {/* Calendario */}
+          <div className="flex-1 bg-[#F1EADE] border border-[#E8DCC9] rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+            <h3 className="text-2xl font-semibold text-[#5A534A] mb-6">
+              Calendario
+            </h3>
+
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               initialView="dayGridMonth"
-              events={eventos}
-              height="auto"
+              locale={esLocale}
+              events={
+                filtroEtiqueta === "todas"
+                  ? eventos
+                  : eventos.filter(
+                      (e) => e.extendedProps.etiqueta === filtroEtiqueta
+                    )
+              }
+              height="calc(130vh - 350px)"
               selectable={true}
-              eventClick={(info) =>
-                abrirModal(
-                  eventos.find((e) => e.id === parseInt(info.event.id))
-                )
-              }
-              select={(selectionInfo) =>
-                abrirModal({
-                  start: selectionInfo.startStr,
-                  end: selectionInfo.endStr,
-                  diaSeleccionado: selectionInfo.start,
-                })
-              }
-              contentHeight="auto"
-              eventTextColor="#166534"
-              eventBackgroundColor="#dcfce7"
-              eventBorderColor="#86efac"
+              eventClick={(info) => {
+                const eventoEncontrado = eventos.find(
+                  (e) => e.idEvento === parseInt(info.event.id)
+                );
+                if (eventoEncontrado)
+                  abrirModal({ ...eventoEncontrado, modo: "detalle" }, null);
+              }}
+              select={(selectionInfo) => {
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+
+                const dia = new Date(selectionInfo.start);
+                dia.setHours(0, 0, 0, 0);
+
+                if (dia < hoy) {
+                  alert("No podés agregar eventos en días pasados.");
+                  return;
+                }
+
+                abrirModal(null, selectionInfo.start);
+              }}
+              headerToolbar={{
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,timeGridDay",
+              }}
+              buttonText={{
+                today: "Hoy",
+                month: "Mes",
+                week: "Semana",
+                day: "Día",
+              }}
+
+              dayCellDidMount={(info) => {
+  info.el.style.position = "relative";
+}}
+
+              
+              dayCellContent={(arg) => {
+  const fechaStr = arg.date.toISOString().split("T")[0];
+  const iconSvg = registrosPorFecha[fechaStr];
+
+  return {
+    html: `
+      <div class="dia-contenedor">
+        <span>${arg.dayNumberText}</span>
+        ${
+          iconSvg
+            ? `<span style="
+                position:absolute;
+                right:4px;
+                top:4px;
+                width:18px;
+                height:18px;
+              ">${iconSvg}</span>`
+            : ""
+        }
+      </div>
+    `
+  };
+}}
+
             />
           </div>
 
-          {/* Tarjeta con eventos externos (API Google Calendar) */}
-          <div className="w-full lg:w-1/3">
-            <CalendarioEventos />
-          </div>
-        </div>
-      </div>
+          {/* Próximos eventos */}
+          <aside className="w-full lg:w-[350px] flex-shrink-0 bg-[#F1EADE] border border-[#E8DCC9] rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+            <h3 className="text-2xl font-semibold text-[#5A534A] mb-5 text-center">
+              Próximos eventos
+            </h3>
+            <EtiquetaFilter 
+              filtroEtiqueta={filtroEtiqueta} 
+              setFiltroEtiqueta={setFiltroEtiqueta} 
+            />
 
-      {modalEvento.abierto && (
-        <EventoModal
-          token={token}
-          evento={modalEvento.evento}
-          diaSeleccionado={modalEvento.diaSeleccionado}
-          onClose={cerrarModal}
-          onGuardar={guardarEvento}
-        />
-      )}
+            {eventos.length === 0 ? (
+              <p className="text-[#7A7266] text-sm text-center mt-6">
+                No hay eventos programados
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-3 max-h-[70vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#CBB89D] scrollbar-track-[#F1EADE]">
+                {eventos
+                  .filter((e) =>
+                    filtroEtiqueta === "todas"
+                      ? true
+                      : e.extendedProps.etiqueta === filtroEtiqueta
+                  )
+                  .sort(
+                    (a, b) =>
+                      new Date(a.start).getTime() - new Date(b.start).getTime()
+                  )
+                  .map((e) => (
+                    <li
+                      key={e.idEvento}
+                      className="p-3 rounded-xl border border-[#E8DCC9] bg-[#FFFDF9] hover:bg-[#F6F0E6] hover:border-[#91B088] transition-all duration-200 cursor-pointer shadow-sm"
+                      onClick={() => abrirModal({ ...e, modo: "detalle" })}
+                    >
+                      <h4 className="font-semibold text-[#5A534A] text-sm">
+                        {e.title}
+                      </h4>
+                      <p className="text-xs text-[#7A7266]">
+                        {new Date(e.start).toLocaleDateString("es-AR", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </aside>
+        </div>
+
+        {/* Modal */}
+        {modalEvento.abierto && (
+          <EventoModal
+            token={token}
+            evento={modalEvento.evento}
+            diaSeleccionado={modalEvento.diaSeleccionado}
+            onClose={cerrarModal}
+            onGuardar={guardarEvento}
+          />
+        )}
+      </div>
     </Layout>
   );
 }
