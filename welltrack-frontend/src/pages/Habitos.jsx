@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout"; // 🔹 agregá esta importación
+import Layout from "../components/Layout"; 
 import Loader from "../components/Loader";
 
 export default function HabitosPage() {
@@ -9,7 +9,7 @@ export default function HabitosPage() {
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
 
-const [loading, setLoading] = useState(true); // 👈 nuevo estado
+const [loading, setLoading] = useState(true); 
 
 useEffect(() => {
   const fetchHabitos = async () => {
@@ -45,7 +45,6 @@ useEffect(() => {
       console.error("Error:", err);
       setMensaje("Hubo un problema con la conexión.");
     } finally {
-      // ⏳ pequeña demora visual para el loader
       setTimeout(() => setLoading(false), 800);
     }
   };
@@ -67,7 +66,6 @@ useEffect(() => {
   return (
     <Layout>
       <div className="flex-grow w-screen min-h-screen bg-gradient-to-b from-green-100 via-white to-green-50 py-14 px-8 flex flex-col items-center">
-        {/* 💪 Encabezado y resumen */}
         <section className="text-center mb-10">
           <h2 className="text-4xl font-bold text-green-700 mb-2">
             Mis Hábitos 🌱
@@ -105,15 +103,12 @@ useEffect(() => {
               );
             })()}
         </section>
-
-        {/* ⚠️ Mensaje de error */}
         {mensaje && (
           <p className="text-center text-red-500 bg-red-50 py-2 px-4 rounded-xl mb-6 shadow-sm">
             {mensaje}
           </p>
         )}
-
-        {/* 🧩 Tarjetas de hábitos */}
+        
         {habitos.length === 0 ? (
           <p className="text-center text-gray-500">No hay hábitos aún. 🌿</p>
         ) : (
