@@ -12,7 +12,7 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'nombreApellido' => 'required|string|max:150',
-            'nombreUsuario' => 'required|string|max:100',
+            'nombreUsuario' => 'required|string|max:100|unique:usuarios,nombreUsuario',
             'email' => 'required|string|email|unique:usuarios,email',
             'password' => 'required|string|min:8|confirmed',
             'fechaNac' => 'nullable|date',
@@ -34,11 +34,16 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validated = $request->validate([
-         'email' => 'required|email',
+            'usuarioEmail' => 'required_without:email|string',
+          'email' => 'required_without:usuarioEmail|string',
          'password' => 'required|string',
         ]);
 
-        $user = Usuario::where('email', $validated['email'])->first();
+         $input = $request->usuarioEmail ?? $request->email;
+
+        $user = Usuario::where('email', $input)
+                ->orWhere('nombreUsuario', $input)
+                ->first();
 
         if (!$user || !
         hash::check($validated['password'],

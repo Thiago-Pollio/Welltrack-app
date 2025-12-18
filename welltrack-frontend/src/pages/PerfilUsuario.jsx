@@ -326,7 +326,7 @@ export default function PerfilUsuario() {
                     </h1>
                   </div>
 
-                  <div
+                  {/* <div
                     className="p-6 rounded-3xl border w-96"
                     style={{
                       backgroundColor: COLORES.bgActiveNav,
@@ -336,7 +336,7 @@ export default function PerfilUsuario() {
                     <p className="italic" style={{ color: COLORES.textoMedio }}>
                       {frase}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 

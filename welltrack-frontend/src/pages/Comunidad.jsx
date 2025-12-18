@@ -143,7 +143,7 @@ const cargarActividad = async () => {
     <Layout>
       <div 
         className="grid grid-cols-1 lg:grid-cols-4 gap-6 px-6 py-10"
-        style={{ backgroundColor: COLORES.fondoPagina }}
+        
       >
 
         {/* -------------------------------- */}
@@ -151,13 +151,14 @@ const cargarActividad = async () => {
         {/* -------------------------------- */}
         <div className="hidden lg:flex flex-col gap-6 col-span-1">
 
-          {/* Usuarios recientes */}
+          {/* Usuarios recientes / Nuevos miembros */}
           <div 
             className="p-5 rounded-3xl shadow-sm border"
             style={{ backgroundColor: COLORES.bgCard, borderColor: COLORES.bordeSuave }}
           >
-            <h3 className="font-semibold mb-1" style={{ color: COLORES.textoTitulo }}>Usuarios recientes ↺</h3>
-            <p className="text-xs mb-4" style={{ color: COLORES.textoSubtitulo }}>Conectados hoy</p>
+            {/* CAMBIO 1: Título más acorde a la lógica (últimos registrados) */}
+            <h3 className="font-semibold mb-1" style={{ color: COLORES.textoTitulo }}>Nuevos miembros</h3>
+            <p className="text-xs mb-4" style={{ color: COLORES.textoSubtitulo }}>¡Dales la bienvenida!</p>
 
             <ul className="space-y-4">
               {usuariosRecientes.map((u) => (
@@ -175,7 +176,11 @@ const cargarActividad = async () => {
 
                   <div className="flex flex-col">
                     <span className="text-sm" style={{ color: COLORES.textoOscuro }}>{u.nombreUsuario}</span>
-                    <span className="text-xs" style={{ color: COLORES.textoSubtitulo }}>Hace unos minutos</span>
+                    
+                    {/* CAMBIO 2: Texto genérico pero real */}
+                    <span className="text-xs" style={{ color: COLORES.textoSubtitulo }}>
+                      Se unió recientemente
+                    </span>
                   </div>
                 </li>
               ))}
@@ -367,7 +372,7 @@ const cargarActividad = async () => {
             className="p-5 rounded-3xl shadow-sm border"
             style={{ backgroundColor: COLORES.bgCard, borderColor: COLORES.bordeSuave }}
           >
-            <h3 className="font-semibold mb-4" style={{ color: COLORES.textoTitulo }}>Tu actividad reciente</h3>
+            <h3 className="font-semibold mb-4" style={{ color: COLORES.textoTitulo }}>Actividad reciente</h3>
 
             {!actividad || Object.keys(actividad).length === 0 ? (
               <p className="text-sm" style={{ color: COLORES.textoSubtitulo }}>Cargando...</p>

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Layout from "../components/Layout";
 import Loader from "../components/Loader";
 import Planta from "../components/Planta";
+import PanelNotas from "../components/PanelNotas";
 
 import ins1 from "../assets/insignias/insignia1.png";
 import ins2 from "../assets/insignias/insignia2.png";
@@ -17,6 +18,7 @@ const IMAGENES_INSIGNIAS = {
   4: ins4,
   5: ins5,
 };
+
 
 const API_URL = "http://127.0.0.1:8000/api";
 
@@ -157,6 +159,10 @@ export default function PomodoroPage() {
   const [animarNuevaInsignia, setAnimarNuevaInsignia] = useState(false);
 
   const [insigniasUsuario, setInsigniasUsuario] = useState([]);
+
+  const [panelAbierto, setPanelAbierto] = useState(false);
+
+  const [usuario, setUsuario] = useState(null);
 
   const seleccionarModo = (modo) => {
     setModo(modo);
@@ -731,10 +737,16 @@ export default function PomodoroPage() {
   //if (loading) return <Loader loading={true} />;
 
   return (
+    <><PanelNotas
+            abierto={panelAbierto}
+            usuario={usuario}
+            token={token}
+            onToggle={() => setPanelAbierto(!panelAbierto)}
+          />
     <Layout>
       <div
         className="min-h-screen w-dvw flex flex-col items-center py-10 px-4 md:px-8"
-        style={{ backgroundColor: COLORES.fondoPagina }}
+        
       >
         <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8">
           {/* 🎯 Panel principal */}
@@ -1351,5 +1363,6 @@ export default function PomodoroPage() {
         </div>
       </div>
     </Layout>
+    </>
   );
 }

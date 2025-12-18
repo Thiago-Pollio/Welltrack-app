@@ -199,7 +199,17 @@ export default function Planner() {
       <div className="fixed inset-0 w-full h-full bg-[#F9F7F2] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        Poner texto
+        <div className="text-center mb-12 space-y-3">
+          <span className="bg-[#F1EADE] text-[#5A534A] px-4 py-1 rounded-full text-xs font-semibold tracking-wide uppercase">
+            Organización Consciente
+          </span>
+          <h1 className="text-4xl md:text-5xl font-bold text-[#5A534A]">
+            Planifica tu Bienestar
+          </h1>
+          <p className="text-[#7A7266] max-w-md mx-auto">
+            Cada día es una nueva oportunidad para crecer.
+          </p>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-10 justify-center">
 
@@ -244,9 +254,9 @@ export default function Planner() {
                 abrirModal(null, selectionInfo.start);
               }}
               headerToolbar={{
-                left: "prev,next today",
+                left: "prev next today",
                 center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay",
+                right: "dayGridMonth timeGridWeek timeGridDay",
               }}
               buttonText={{
                 today: "Hoy",
@@ -255,9 +265,7 @@ export default function Planner() {
                 day: "Día",
               }}
 
-              dayCellDidMount={(info) => {
-  info.el.style.position = "relative";
-}}
+              
 
               
               dayCellContent={(arg) => {
@@ -272,8 +280,8 @@ export default function Planner() {
           iconSvg
             ? `<span style="
                 position:absolute;
-                right:4px;
-                top:4px;
+                right:85px;
+                top:6px;
                 width:18px;
                 height:18px;
               ">${iconSvg}</span>`

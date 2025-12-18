@@ -1,147 +1,131 @@
 import { useEffect, useState } from "react";
 import { Dumbbell } from "lucide-react";
-
 import { useNavigate } from "react-router-dom";
 
-
-
-
-export default function TarjetaHabito({ setAbrirHabito }) {
+export default function TarjetaHabito() {
   const token = localStorage.getItem("token");
-
-  const [habito, setHabito] = useState(null);
-  const [progresoHoy, setProgresoHoy] = useState(0);
-  const [racha, setRacha] = useState(0);
-  const [loading, setLoading] = useState(true);
-
   const navigate = useNavigate();
 
-  // ========================
-  // Obtener hábitos
-  // ========================
+  const [totalHabitos, setTotalHabitos] = useState(0);
+  const [completadosHoy, setCompletadosHoy] = useState(0);
+  const [progresoGlobal, setProgresoGlobal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const cargarHabito = async () => {
+    const cargarHabitos = async () => {
       try {
         const res = await fetch("http://127.0.0.1:8000/api/habitos", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const data = await res.json();
-
-        console.log("DEBUG HABITOS:", data);
-
-        // 🔥 Tus hábitos están dentro de "registros"
         const lista = data.registros || [];
+
+        setTotalHabitos(lista.length);
 
         if (lista.length === 0) {
           setLoading(false);
           return;
         }
 
-        const primer = lista[0]; // TOMAMOS UNO SOLO
-        setHabito(primer);
+        // Calcular progreso del día
+        let countCompletados = 0;
 
-        await cargarProgresoHoy(primer.idHabito);
-        await cargarRacha(primer.idHabito);
-      } catch (err) {
-        console.error("ERROR:", err);
+        for (const hab of lista) {
+          const respHoy = await fetch(
+            `http://127.0.0.1:8000/api/habitos/${hab.idHabito}/hoy`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          const infoHoy = await respHoy.json();
+
+          if (infoHoy.cumplido) countCompletados++;
+        }
+
+        setCompletadosHoy(countCompletados);
+
+        const porcentaje = Math.round((countCompletados / lista.length) * 100);
+        setProgresoGlobal(porcentaje);
+      } catch (e) {
+        console.error(e);
       } finally {
         setLoading(false);
       }
     };
 
-    cargarHabito();
+    cargarHabitos();
   }, []);
 
-  // ========================
-  // Progreso de hoy
-  // ========================
-  const cargarProgresoHoy = async (idHabito) => {
-    const res = await fetch(
-      `http://127.0.0.1:8000/api/habitos/${idHabito}/hoy`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    const data = await res.json();
-
-    // Tu backend devuelve { valorHoy, cumplido, meta, unidad }
-    setProgresoHoy(data.cumplido ? 100 : 0);
-  };
-
-  // ========================
-  // Racha
-  // ========================
-  const cargarRacha = async (idHabito) => {
-    const res = await fetch(
-      `http://127.0.0.1:8000/api/habitos/${idHabito}/historial`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    const data = await res.json();
-
-    const historial = data.historial || [];
-
-    let rachaTemp = 0;
-    const hoy = new Date().toISOString().slice(0, 10);
-
-    for (let i = 0; i < historial.length; i++) {
-      const f = historial[i].fecha;
-      const diff =
-        (new Date(hoy) - new Date(f)) / (1000 * 60 * 60 * 24);
-
-      if (diff === rachaTemp) {
-        rachaTemp++;
-      } else break;
-    }
-
-    setRacha(rachaTemp);
-  };
-
-  // ========================
-  // UI
-  // ========================
-  return (
-    <div className="bg-gradient-to-br from-blue-200 to-blue-400 p-6 rounded-3xl shadow-lg flex flex-col justify-between">
-      <div>
-        <Dumbbell className="w-8 h-8 mb-2 text-blue-800" />
-        <h3 className="text-xl font-semibold text-blue-900">Tus hábitos</h3>
+ return (
+  <div className="bg-[#F1EADE] border border-[#E8DCC9] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      
+      {/* SECCIÓN IZQUIERDA: Título y Datos Generales */}
+      <div className="flex-1">
+        <div className="flex items-center gap-3 mb-2">
+          <Dumbbell className="w-6 h-6 text-[#57A773]" />
+          <h3 className="text-xl font-semibold text-[#5A534A]">Tus hábitos</h3>
+        </div>
 
         {loading ? (
-          <p className="text-blue-800/80 text-sm mt-1">Cargando...</p>
-        ) : !habito ? (
-          <p className="text-blue-900/80 italic text-sm mt-2">
+          <p className="text-[#7A7266] text-sm animate-pulse">Cargando progreso...</p>
+        ) : totalHabitos === 0 ? (
+          <p className="text-[#7A7266] italic text-sm">
             Todavía no tenés hábitos creados.
           </p>
         ) : (
-          <>
-            <p className="text-blue-900 mt-2 text-sm">
-              Hábito destacado: <strong>{habito.nombre}</strong>
+          <div>
+            <p className="text-[#6E6A63] text-sm">
+              Tenés <strong className="text-[#57A773]">{totalHabitos}</strong> hábitos activos.
             </p>
-
-            <p className="text-blue-900 font-medium mt-1 text-sm">
-              🔥 Racha actual: {racha} días
+            <p className="text-[#6E6A63] text-sm mt-1">
+              Hoy completaste <strong className="text-[#57A773]">{completadosHoy}</strong>.
             </p>
-
-            <div className="w-full bg-white/40 h-2 rounded-full mt-3">
-              <div
-                className="bg-blue-700 h-full rounded-full"
-                style={{ width: `${progresoHoy}%` }}
-              ></div>
-            </div>
-
-            <p className="text-xs text-blue-900 mt-1">
-              Progreso de hoy: {progresoHoy}%
-            </p>
-          </>
+          </div>
         )}
       </div>
 
-      <button
-        onClick={() => navigate("/habitosIntegrado")}
-        className="mt-4 bg-blue-700 text-white py-2 rounded-xl hover:bg-blue-800 transition"
-      >
-        Ver más
-      </button>
+      {/* SECCIÓN DERECHA: Barra de progreso y Botón (Aprovecha el ancho) */}
+      {totalHabitos > 0 && (
+        <div className="flex-1 w-full md:max-w-xs flex flex-col justify-center">
+          
+          <div className="flex justify-between text-xs text-[#7A7266] mb-1">
+            <span>Progreso diario</span>
+            <span className="font-semibold">{progresoGlobal}%</span>
+          </div>
+
+          {/* Barra de progreso */}
+          <div className="w-full bg-[#E8DCC9] h-2.5 rounded-full mb-4">
+            <div
+              className="bg-[#57A773] h-full rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${progresoGlobal}%` }}
+            ></div>
+          </div>
+
+          <button
+            onClick={() => navigate("/habitosIntegrado")}
+            className="w-full bg-[#57A773] hover:bg-[#91B088] text-white py-2 rounded-xl transition text-sm font-medium shadow-sm"
+          >
+            Ver mis hábitos
+          </button>
+        </div>
+      )}
+
+      {/* Botón alternativo si no hay hábitos (para mantener estructura) */}
+      {totalHabitos === 0 && !loading && (
+        <div className="md:self-end">
+             <button
+            onClick={() => navigate("/habitosIntegrado")}
+            className="bg-[#57A773] hover:bg-[#91B088] text-white py-2 px-6 rounded-xl transition text-sm font-medium shadow-sm"
+          >
+            Crear Hábito
+          </button>
+        </div>
+      )}
+      
     </div>
-  );
+  </div>
+);
 }

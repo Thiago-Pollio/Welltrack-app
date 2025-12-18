@@ -325,7 +325,7 @@ export default function PanelNotas({ abierto, usuario, token, onToggle }) {
 
       {/* Panel */}
       <div
-        className={`fixed top-0 left-0 h-screen z-50 transition-all duration-500 overflow-y-auto 
+        className={`fixed top-0 left-0 h-screen z-[999] transition-all duration-500 overflow-y-auto 
           backdrop-blur-lg bg-white/70 border-r border-white/50 shadow-2xl`}
         style={{ width: abierto ? "360px" : "0", pointerEvents: abierto ? "auto" : "none" }}
       >
@@ -357,7 +357,7 @@ export default function PanelNotas({ abierto, usuario, token, onToggle }) {
               />
               <button
                 onClick={agregarNota}
-                className="bg-gradient-to-r from-green-400 to-green-500 text-white px-3 py-1 rounded-xl text-sm font-medium hover:scale-105 transition"
+                className="bg-[#57A773] hover:bg-[#91B088] text-white px-3 py-1 rounded-xl text-sm font-medium hover:scale-105 transition"
               >
                 +
               </button>

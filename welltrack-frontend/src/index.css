@@ -565,8 +565,7 @@ a:hover {
   --fc-today-bg-color: #eef6f1;       /* Fondo suave hoy */
   --fc-page-bg-color: #ffffff;
   --fc-neutral-bg-color: #f7f4ee;
-  --fc-event-bg-color: #58a774;
-  --fc-event-border-color: #58a774;
+
   --fc-event-text-color: #fff;
   
   border-radius: 12px;
@@ -608,4 +607,16 @@ a:hover {
   text-transform: capitalize;
   font-weight: 500;
   box-shadow: none !important;
+}
+
+/*GRADIENTE DEL HERO*/
+@keyframes gradient-move {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-gradient {
+  background-size: 200% 200%;
+  animation: gradient-move 12s ease-in-out infinite;
 }

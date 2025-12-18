@@ -4,22 +4,33 @@ const ResumenHabitos = ({ habitos }) => {
   if (!habitos || habitos.length === 0) return null;
 
   // Si los hábitos tienen historial, combinarlo
- const historial = habitos.flatMap(h => h.historial || []);
-  const completados = habitos.filter(h => h.progreso?.cumplido).length;
+  const historial = habitos.flatMap((h) => h.historial || []);
+  const completados = habitos.filter((h) => h.progreso?.cumplido).length;
   const total = habitos.length;
-  const porcentaje = Math.round((completados / total) * 100);
+  // const porcentaje = Math.round((completados / total) * 100);
+  const porcentaje = total > 0 ? Math.round((completados / total) * 100) : 0;
 
-  const mensajes = [
-    { limite: 0, texto: "¡A empezar el día! 🌞" },
-    { limite: 25, texto: "Buen comienzo 💪" },
-    { limite: 50, texto: "¡Vas por la mitad! ⚡" },
-    { limite: 75, texto: "¡Casi lo lográs! 🌿" },
-    { limite: 100, texto: "¡Increíble! 🎉 Completaste todos tus hábitos" },
-  ];
+  // const mensajes = [
+  //   { limite: 0, texto: "¡A empezar el día! 🌞" },
+  //   { limite: 25, texto: "Buen comienzo 💪" },
+  //   { limite: 50, texto: "¡Vas por la mitad! ⚡" },
+  //   { limite: 75, texto: "¡Casi lo lográs! 🌿" },
+  //   { limite: 100, texto: "¡Increíble! 🎉 Completaste todos tus hábitos" },
+  // ];
 
-  const mensaje =
-    mensajes.find((m) => porcentaje <= m.limite)?.texto ||
-    mensajes[mensajes.length - 1].texto;
+  const getMensaje = (pct) => {
+    if (pct === 100) return "¡Increíble! Completaste todo";
+    if (pct >= 75) return "¡Casi lo lográs!"; // Cubre 75% a 99%
+    if (pct >= 50) return "¡Vas por la mitad!";
+    if (pct >= 25) return "Buen comienzo";
+    return "¡A empezar el día!";
+  };
+
+  const mensaje = getMensaje(porcentaje);
+
+  // const mensaje =
+  //   mensajes.find((m) => porcentaje <= m.limite)?.texto ||
+  //   mensajes[mensajes.length - 1].texto;
 
   // Últimos 7 días del historial
   const diasCumplidos = historial
@@ -32,7 +43,7 @@ const ResumenHabitos = ({ habitos }) => {
   console.log("📅 diasCumplidos:", diasCumplidos);
 
   return (
-    <div className="flex flex-col items-center text-center bg-white/70 backdrop-blur-sm p-8 rounded-3xl shadow-md border border-green-100 mb-8 w-33 max-w-3xl mx-auto">
+    <div className="flex flex-col items-center text-center bg-white/70 backdrop-blur-sm p-8 rounded-3xl shadow-md border border-green-100 mb-8 w-64 mx-auto transition-all">
       {/* 🧭 Donut */}
       <div className="relative w-32 h-32 mb-4">
         <svg className="w-full h-full transform -rotate-90">
@@ -54,7 +65,9 @@ const ResumenHabitos = ({ habitos }) => {
             fill="transparent"
             initial={{ strokeDasharray: `0 ${circumference}` }}
             animate={{
-              strokeDasharray: `${(porcentaje / 100) * circumference} ${circumference}`,
+              strokeDasharray: `${
+                (porcentaje / 100) * circumference
+              } ${circumference}`,
             }}
             transition={{ duration: 1 }}
           />
@@ -70,9 +83,10 @@ const ResumenHabitos = ({ habitos }) => {
         </div>
       </div>
 
+<div className="h-16 flex items-center justify-center px-2 mb-4">
       {/* 💬 Texto motivacional */}
-      <p className="text-lg text-green-800 font-semibold mb-6">{mensaje}</p>
-
+      <p className="text-lg text-green-800 font-semibold  leading-tight">{mensaje}</p>
+</div>
       {/* 📅 Mini calendario semanal */}
       <div className="flex gap-2 justify-center">
         {diasCumplidos.map((d, i) => (
@@ -80,16 +94,12 @@ const ResumenHabitos = ({ habitos }) => {
             key={i}
             className={`w-6 h-6 rounded-md transition ${
               d.cumplido
- ? "bg-gradient-to-br from-green-400 to-green-600"
-: "bg-gray-200 border border-green-200"
+                ? "bg-gradient-to-br from-green-400 to-green-600"
+                : "bg-gray-200 border border-green-200"
             }`}
           ></div>
         ))}
       </div>
-
-      <p className="text-sm text-gray-500 mt-2">
-        Últimos 7 días de hábitos 🌿
-      </p>
     </div>
   );
 };

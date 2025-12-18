@@ -27,7 +27,7 @@ export default function Loader({ loading }) {
           className="flex flex-col items-center"
         >
           <motion.img
-            src="/src/assets/logo-solo.png"
+            src="/src/assets/Welltrack-logo-solo.png"
             alt="Logo Welltrack"
             className="w-20 h-20 mb-6"
             animate={{ rotate: 360 }}

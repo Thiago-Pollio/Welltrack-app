@@ -81,30 +81,34 @@ export default function MiniCalendario({ onClick }) {
         ))}
 
         {dias.map((dia, i) => {
-          const tieneEvento = eventos.some(
+        const tieneEvento = eventos.some(
             (ev) => isSameDay(new Date(ev.date), dia)
-          );
+        );
 
-          return (
+        return (
             <div
-              key={i}
-              onClick={onClick}
-              className={`p-2 rounded-lg cursor-pointer transition
-              ${
+            key={i}
+            onClick={() => onClick(dia)}
+            className={`flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition
+                ${
                 isSameMonth(dia, mesActual)
-                  ? "text-gray-700"
-                  : "text-gray-300"
-              }
-              ${
-                tieneEvento
-                  ? "bg-green-300 text-green-900 font-bold"
-                  : "hover:bg-gray-100"
-              }`}
+                    ? "text-gray-700"
+                    : "text-gray-300"
+                }
+                hover:bg-gray-100
+            `}
             >
-              {format(dia, "d")}
+            {/* Número del día */}
+            <span className="text-sm">{format(dia, "d")}</span>
+
+            {/* Bolita si hay evento */}
+            {tieneEvento && (
+                <span className="w-2 h-2 mt-1 rounded-full bg-green-500"></span>
+            )}
             </div>
-          );
+        );
         })}
+
       </div>
     </div>
   );

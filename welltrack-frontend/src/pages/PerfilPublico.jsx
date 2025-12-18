@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import { Heart, MessageSquare, ArrowLeft, Users } from "lucide-react";
 
 export default function PerfilPublico() {
 
@@ -31,6 +32,30 @@ export default function PerfilPublico() {
     cargarPerfil();
   }, [idUsuario]);
 
+  // ======================
+  // PALETA TIERRA (Definición local)
+  // ======================
+  const COLORES = {
+    fondoPagina: "#F7F5EF",
+    textoTitulo: "#121F15", // Dark Jungle
+    textoSubtitulo: "#866b46", // Khaki medium
+    textoOscuro: "#463b20", // Khaki dark
+    bordeSuave: "#dfd4b9", // Bone/Beige border
+    
+    // Acciones
+    primario: "#58a774", // Jungle Green
+    primarioHover: "#46865d",
+    
+    // Fondos
+    bgCard: "#ffffff",
+    bgInput: "#ffffff",
+    bgActiveNav: "#eef6f1", // Usado para items de lista, fondos suaves
+    bgHover: "#f7f4ee",
+    
+    // UI Elements
+    avatarText: "#356445"
+  };
+
   if (!usuario) return <Layout>Cargando...</Layout>;
 
   return (
@@ -43,12 +68,30 @@ export default function PerfilPublico() {
         <div className="hidden lg:flex flex-col gap-6 col-span-1">
 
           {/* Volver */}
-          <button
-            onClick={() => navigate("/comunidad")}
-            className="text-emerald-700 hover:underline"
+          <div 
+            className="p-5 rounded-3xl shadow-sm border"
+            style={{ backgroundColor: COLORES.bgCard, borderColor: COLORES.bordeSuave }}
           >
-            ← Volver
-          </button>
+            {/* Botón mejorado (Estilos aplicados) */}
+            <button
+              onClick={() => navigate("/comunidad")}
+              className="group w-full flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-300 font-medium text-sm mb-4 hover:opacity-80"
+              style={{ backgroundColor: COLORES.bgActiveNav, color: COLORES.primario }}
+            >
+              <ArrowLeft 
+                size={18} 
+                className="group-hover:-translate-x-1 transition-transform duration-300" 
+              />
+              Volver a la comunidad
+            </button>
+
+            <h3 className="font-semibold text-base" style={{ color: COLORES.textoTitulo }}>
+              Más de la comunidad
+            </h3>
+            <p className="text-xs mt-1" style={{ color: COLORES.textoSubtitulo }}>
+              Explorá otros temas y usuarios
+            </p>
+          </div>
 
           {/* CARD: Datos del Usuario */}
           <div className="bg-white p-5 rounded-3xl shadow border border-gray-100">

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Layout from "../components/Layout";
 import Loader from "../components/Loader";
 import ResumenHabitos from "../components/ResumenHabitos";
+import PanelNotas from "../components/PanelNotas";
+
 
 const lanzarConfeti = () => {
   const emojis = ["🎉", "🌿", "💪", "✨", "🌞"];
@@ -22,6 +24,7 @@ const lanzarConfeti = () => {
 
 export default function HabitosPage2() {
   const token = localStorage.getItem("token");
+  const [usuario, setUsuario] = useState(null);
   const [habitos, setHabitos] = useState([]);
   const [habitoSeleccionado, setHabitoSeleccionado] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -40,6 +43,8 @@ export default function HabitosPage2() {
     actual: 0,
     maxima: 0,
   });
+
+  const [panelAbierto, setPanelAbierto] = useState(false);
 
   function normalizarFecha(fechaString) {
     // Forzamos a interpretar la fecha como LOCAL, no UTC
@@ -499,12 +504,22 @@ export default function HabitosPage2() {
   if (loading) return <Loader loading={true} />;
 
   return (
-    <Layout>
-      <div className="min-h-screen w-dvw bg-gradient-to-b from-green-50 to-white flex flex-col md:flex-row gap-8 md:gap-10">
+
+    <>
+        <PanelNotas
+            abierto={panelAbierto}
+            usuario={usuario}
+            token={token}
+            onToggle={() => setPanelAbierto(!panelAbierto)}
+          />
+<Layout>
+      <div className="min-h-screen w-full p-4 md:p-8">
+          
+          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
         {/* 📋 Lista de hábitos */}
-        <aside className="w-full md:w-1/3 p-6 border-r border-green-100 bg-white/60 backdrop-blur-sm">
+        <aside className="w-full md:w-1/3 p-6 border-r border-[#E8DCC9] rounded-3xl bg-white/60 backdrop-blur-sm shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-green-700">
+            <h2 className="text-2xl font-bold text-[#121F15]">
               Mis hábitos 🌱
             </h2>
             <button
@@ -519,14 +534,14 @@ export default function HabitosPage2() {
                 });
                 setMostrarFormulario(true);
               }}
-              className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition"
+              className="bg-[#58a774] text-white px-3 py-1 rounded-lg hover:bg-[#46865d] transition"
             >
               + Nuevo
             </button>
           </div>
 
           {habitos.length === 0 ? (
-            <p className="text-gray-500 italic">Aún no tenés hábitos.</p>
+            <p className="text-[#866b46] italic">Aún no tenés hábitos.</p>
           ) : (
             <ul className="space-y-3">
               {habitos.map((h) => (
@@ -536,13 +551,13 @@ export default function HabitosPage2() {
                   className={`p-4 rounded-xl shadow-sm cursor-pointer border flex justify-between items-center transition 
   ${
     habitoSeleccionado?.idHabito === h.idHabito
-      ? "bg-green-100 border-green-400"
-      : "bg-white hover:bg-green-50 border-green-100"
+      ? "bg-[#eef6f1] border-[#58a774]"
+      : "bg-white hover:bg-[#f7f4ee] border-[#E8DCC9]"
   }`}
                 >
                   <div>
-                    <p className="font-semibold text-green-700">{h.nombre}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className={`font-semibold ${habitoSeleccionado?.idHabito === h.idHabito ? 'text-[#121F15]' : 'text-[#463b20]'}`}>{h.nombre}</p>
+                    <p className="text-sm text-[#866b46]">
                       Meta: {h.meta} {h.unidad}
                     </p>
                   </div>
@@ -554,7 +569,7 @@ export default function HabitosPage2() {
                         setModoEdicion(true);
                         setMostrarFormulario(true);
                       }}
-                      className="text-blue-600 hover:text-blue-800 text-sm"
+                      className="text-[#58a774] hover:text-[#46865d] text-sm"
                     >
                       ✏️
                     </button>
@@ -563,7 +578,7 @@ export default function HabitosPage2() {
                         e.stopPropagation();
                         eliminarHabito(h.idHabito);
                       }}
-                      className="text-red-500 hover:text-red-700 text-sm"
+                      className="text-red-400 hover:text-red-600 text-sm"
                     >
                       🗑️
                     </button>
@@ -576,7 +591,7 @@ export default function HabitosPage2() {
 
         {/* 🌞 Resumen diario de progreso */}
         {habitos.length > 0 && (
-          <div className="bg-white border border-green-100 shadow-sm rounded-2xl py-5 px-8 mb-8 flex flex-col items-center gap-8 md:gap-10">
+          <div className="bg-white border border-[#E8DCC9] shadow-sm rounded-2xl py-5 px-8 mb-8 flex flex-col items-center gap-8 md:gap-10">
             {/* {(() => {
               const completados = habitos.filter(
                 (h) => h.progreso?.cumplido
@@ -617,25 +632,18 @@ export default function HabitosPage2() {
 
               return (
                 <>
-                  <p className="text-lg text-green-800 font-semibold">
+                  <p className="text-lg text-[#121F15] font-semibold">
                     {completados} de {total} hábitos completados hoy
                   </p>
-                  <div className="w-64 bg-green-100 rounded-full h-3 overflow-hidden">
-                    <div
-                      className="h-3 bg-gradient-to-r from-green-400 to-blue-400 transition-all duration-700"
-                      style={{ width: `${porcentaje}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-gray-500 italic">
-                    Progreso general del día: {porcentaje}% 🌞
-                  </p>
+                  
+                  
                 </>
               );
             })()}
             <ResumenHabitos habitos={habitos} />
 
             <div className="text-center mt-6">
-              <p className="text-green-700 font-semibold mb-2">
+              <p className="text-[#121F15] font-semibold mb-2">
                 🌎 Racha global
               </p>
 
@@ -645,14 +653,14 @@ export default function HabitosPage2() {
                     key={i}
                     className={`w-4 h-4 rounded-md ${
                       i < (rachaGlobal.actual || 0)
-                        ? "bg-green-500"
-                        : "bg-green-100"
+                        ? "bg-[#58a774]"
+                        : "bg-[#e0e0e0]"
                     }`}
                   ></div>
                 ))}
               </div>
 
-              <p className="text-xs text-gray-400 mt-2">
+              <p className="text-xs text-[#866b46] mt-2">
                 {rachaGlobal.actual} / {rachaGlobal.maxima} días seguidos 🔥
               </p>
             </div>
@@ -660,9 +668,9 @@ export default function HabitosPage2() {
         )}
 
         {/* 🧠 Panel derecho */}
-        <main className="flex-grow p-10 bg-gradient-to-br from-green-50 to-white">
+        <main className="flex-grow p-10 mr-4 rounded-3xl" style={{ backgroundColor: "transparent" }}>
           {!habitoSeleccionado ? (
-            <div className="text-center text-gray-500 mt-10">
+            <div className="text-center text-[#866b46] mt-10">
               Seleccioná un hábito para ver su progreso 🌿
             </div>
           ) : (
@@ -678,15 +686,15 @@ export default function HabitosPage2() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="bg-white rounded-3xl shadow-lg p-10 max-w-2xl mx-auto border border-green-100"
+                className="bg-white rounded-3xl shadow-lg p-10 max-w-2xl mx-auto border border-[#E8DCC9]"
               >
                 {/* 🏷️ Encabezado */}
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-3xl font-bold text-green-700 flex items-center gap-2">
+                  <h3 className="text-3xl font-bold text-[#121F15] flex items-center gap-2">
                     🌿 {habitoSeleccionado.nombre}
                   </h3>
                   <span
-                    className="text-sm px-3 py-1 bg-green-100 text-green-700 rounded-full border border-green-200"
+                    className="text-sm px-3 py-1 bg-[#eef6f1] text-[#356445] rounded-full border border-[#bcdcc7]"
                     title="Frecuencia"
                   >
                     {habitoSeleccionado.frecuencia === "diario"
@@ -699,16 +707,16 @@ export default function HabitosPage2() {
 
                 {/* 📝 Descripción */}
                 {habitoSeleccionado.descripcion && (
-                  <p className="text-gray-600 mb-6 leading-relaxed">
+                  <p className="text-[#463b20] mb-6 leading-relaxed">
                     {habitoSeleccionado.descripcion}
                   </p>
                 )}
 
                 {/* 🎯 Meta */}
-                <div className="bg-green-50 border border-green-100 rounded-xl p-4 mb-6">
-                  <p className="text-green-800 font-semibold">
+                <div className="bg-[#F7F5EF] border border-[#E8DCC9] rounded-xl p-4 mb-6">
+                  <p className="text-[#121F15] font-semibold">
                     🎯 Meta diaria: {habitoSeleccionado.meta}{" "}
-                    <span className="text-green-600">
+                    <span className="text-[#58a774]">
                       {habitoSeleccionado.unidad}
                     </span>
                   </p>
@@ -716,12 +724,12 @@ export default function HabitosPage2() {
 
                 {/* 📈 Barra de progreso */}
                 <div className="mb-6">
-                  <h4 className="text-md font-semibold text-green-700 mb-2">
+                  <h4 className="text-md font-semibold text-[#121F15] mb-2">
                     Progreso de hoy
                   </h4>
-                  <div className="w-full bg-green-100 rounded-full h-4 overflow-hidden shadow-inner">
+                  <div className="w-full bg-[#eef6f1] rounded-full h-4 overflow-hidden shadow-inner">
                     <motion.div
-                      className="bg-gradient-to-r from-green-500 to-blue-500 h-4"
+                      className="bg-gradient-to-r from-[#58a774] to-[#719966] h-4"
                       initial={{ width: 0 }}
                       animate={{
                         width: `${Math.min(
@@ -734,7 +742,7 @@ export default function HabitosPage2() {
                       transition={{ duration: 0.8 }}
                     />
                   </div>
-                  <p className="text-sm text-gray-600 mt-2 text-center">
+                  <p className="text-sm text-[#866b46] mt-2 text-center">
                     {habitoSeleccionado.progreso?.valorHoy || 0} /{" "}
                     {habitoSeleccionado.meta} {habitoSeleccionado.unidad}
                   </p>
@@ -742,7 +750,7 @@ export default function HabitosPage2() {
 
                 {/* 🔥 Racha */}
                 <div className="mb-6">
-                  <h4 className="text-md font-semibold text-green-700 mb-2">
+                  <h4 className="text-md font-semibold text-[#121F15] mb-2">
                     Racha actual 🔥
                   </h4>
                   {/* <div className="flex gap-1 justify-center">
@@ -782,8 +790,8 @@ export default function HabitosPage2() {
                             title={fecha}
                             className={`w-6 h-6 rounded-md border transition ${
                               cumplido
-                                ? "bg-green-500 border-green-600"
-                                : "bg-green-100 border-green-200"
+                                ? "bg-[#58a774] border-[#46865d]"
+                                : "bg-[#e0e0e0] border-[#dcdcdc]"
                             }`}
                           ></div>
                         );
@@ -794,12 +802,12 @@ export default function HabitosPage2() {
                     {habitoSeleccionado.rachaActual ?? 0} días seguidos 🌿
                   </p> */}
 
-                  <p className="text-sm text-gray-500 mt-1 text-center">
+                  <p className="text-sm text-[#866b46] mt-1 text-center">
                     {habitoSeleccionado.rachaActual !== undefined ? habitoSeleccionado.rachaActual : 0}{" "} días seguidos 🌿
                   </p>
 
 
-                  <p className="mt-3 text-xs text-gray-400 text-center">
+                  <p className="mt-3 text-xs text-[#866b46] text-center opacity-70">
                     Mejor racha: {habitoSeleccionado.rachaMaxima ?? 0} 🔥
                   </p>
                 </div>
@@ -809,7 +817,8 @@ export default function HabitosPage2() {
                   <input
                     type="number"
                     placeholder="Ingresá tu progreso de hoy"
-                    className="border rounded-xl px-4 py-2 flex-grow focus:ring-2 focus:ring-green-300 outline-none"
+                    className="border rounded-xl px-4 py-2 flex-grow focus:ring-2 focus:ring-[#bcdcc7] outline-none"
+                    style={{ borderColor: "#E8DCC9" }}
                     value={habitoSeleccionado.valorTemp || ""}
                     onChange={(e) =>
                       setHabitoSeleccionado({
@@ -818,7 +827,7 @@ export default function HabitosPage2() {
                       })
                     }
                   />
-                  <span className="text-gray-500 text-sm">
+                  <span className="text-[#866b46] text-sm">
                     {habitoSeleccionado.unidad}
                   </span>
                 </div>
@@ -826,9 +835,11 @@ export default function HabitosPage2() {
                 {/* 🧩 Botón de acción */}
                 <button
                   onClick={guardarProgreso}
-                  className="w-full mt-2 bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-xl hover:scale-[1.03] transition font-semibold shadow-sm"
+                  className="w-full mt-2 text-white py-3 rounded-xl hover:scale-[1.03] transition font-semibold shadow-sm"
+                  style={{ backgroundColor: "#58a774" }}
                 >
-                  Guardar progreso 🌞
+                  Guardar progreso
+            
                 </button>
 
                 {/* 🎉 Mensaje de felicitación */}
@@ -838,7 +849,8 @@ export default function HabitosPage2() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4 }}
-                    className="mt-4 bg-green-100 text-green-800 font-semibold text-center py-3 px-4 rounded-xl shadow-sm"
+                    className="mt-4 text-[#356445] font-semibold text-center py-3 px-4 rounded-xl shadow-sm"
+                    style={{ backgroundColor: "#eef6f1" }}
                   >
                     {felicitacion}
                   </motion.div>
@@ -852,7 +864,7 @@ export default function HabitosPage2() {
         <AnimatePresence>
           {mostrarFormulario && (
             <motion.div
-              className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50"
+              className="fixed inset-0 flex items-center justify-center bg-[#121F15]/60 backdrop-blur-sm z-50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -866,7 +878,7 @@ export default function HabitosPage2() {
                   stiffness: 120,
                   damping: 14,
                 }}
-                className="bg-white rounded-3xl shadow-xl w-full max-w-md p-6 md:p-8 relative border border-green-100"
+                className="bg-white rounded-3xl shadow-xl w-full max-w-md p-6 md:p-8 relative border border-[#E8DCC9]"
               >
                 {/* ✖ Cerrar */}
                 <button
@@ -878,9 +890,8 @@ export default function HabitosPage2() {
 
                 {/* 🌿 Título */}
                 <h3
-                  className={`text-2xl font-bold mb-5 text-center ${
-                    modoEdicion ? "text-blue-700" : "text-green-700"
-                  }`}
+                  className="text-2xl font-bold mb-5 text-center"
+                  style={{ color: modoEdicion ? "#3b82f6" : "#121F15" }}
                 >
                   {modoEdicion ? "Editar hábito ✏️" : "Nuevo hábito 🌱"}
                 </h3>
@@ -893,7 +904,8 @@ export default function HabitosPage2() {
                   onChange={(e) =>
                     setNuevoHabito({ ...nuevoHabito, nombre: e.target.value })
                   }
-                  className="border border-green-200 focus:ring-2 focus:ring-green-400 focus:outline-none rounded-lg px-4 py-2 w-full mb-4"
+                  className="border rounded-lg px-4 py-2 w-full mb-4 focus:outline-none focus:ring-2"
+                  style={{ borderColor: "#E8DCC9", "--tw-ring-color": "#bcdcc7" }}
                 />
 
                 {/* Descripción */}
@@ -906,12 +918,13 @@ export default function HabitosPage2() {
                       descripcion: e.target.value,
                     })
                   }
-                  className="border border-green-200 focus:ring-2 focus:ring-green-400 focus:outline-none rounded-lg px-4 py-2 w-full mb-4 resize-none h-20"
+                  className="border rounded-lg px-4 py-2 w-full mb-4 resize-none h-20 focus:outline-none focus:ring-2"
+                  style={{ borderColor: "#E8DCC9", "--tw-ring-color": "#bcdcc7" }}
                 />
 
                 {/* Frecuencia */}
                 <div className="mb-4">
-                  <label className="text-gray-600 text-sm font-medium block mb-1">
+                  <label className="text-[#866b46] text-sm font-medium block mb-1">
                     Frecuencia
                   </label>
                   <select
@@ -922,7 +935,8 @@ export default function HabitosPage2() {
                         frecuencia: e.target.value,
                       })
                     }
-                    className="border border-green-200 focus:ring-2 focus:ring-green-400 focus:outline-none rounded-lg px-4 py-2 w-full"
+                    className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2"
+                    style={{ borderColor: "#E8DCC9", "--tw-ring-color": "#bcdcc7" }}
                   >
                     <option value="diario">Diario</option>
                     <option value="semanal">Semanal</option>
@@ -939,7 +953,8 @@ export default function HabitosPage2() {
                     onChange={(e) =>
                       setNuevoHabito({ ...nuevoHabito, meta: e.target.value })
                     }
-                    className="border border-green-200 focus:ring-2 focus:ring-green-400 focus:outline-none rounded-lg px-4 py-2 w-1/2"
+                    className="border rounded-lg px-4 py-2 w-1/2 focus:outline-none focus:ring-2"
+                    style={{ borderColor: "#E8DCC9", "--tw-ring-color": "#bcdcc7" }}
                   />
 
                   <select
@@ -947,7 +962,8 @@ export default function HabitosPage2() {
                     onChange={(e) =>
                       setNuevoHabito({ ...nuevoHabito, unidad: e.target.value })
                     }
-                    className="border border-green-200 focus:ring-2 focus:ring-green-400 focus:outline-none rounded-lg px-4 py-2 w-1/2"
+                    className="border rounded-lg px-4 py-2 w-1/2 focus:outline-none focus:ring-2"
+                    style={{ borderColor: "#E8DCC9", "--tw-ring-color": "#bcdcc7" }}
                   >
                     <option value="">Seleccionar unidad</option>
                     <option value="ml">Mililitros (ml)</option>
@@ -964,13 +980,15 @@ export default function HabitosPage2() {
                 <div className="flex justify-end gap-3 mt-6">
                   <button
                     onClick={() => setMostrarFormulario(false)}
-                    className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition text-gray-700"
+                    className="px-4 py-2 rounded-lg transition"
+                    style={{ backgroundColor: "#eef6f1", color: "#463b20" }}
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={guardarHabito}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white hover:brightness-110 transition"
+                    className="px-4 py-2 rounded-lg text-white hover:brightness-110 transition"
+                    style={{ backgroundColor: "#58a774" }}
                   >
                     Guardar
                   </button>
@@ -980,7 +998,9 @@ export default function HabitosPage2() {
           )}
         </AnimatePresence>
       </div>
+      </div>
       {/* <OverlayFelicitacion /> */}
     </Layout>
+    </>
   );
 }

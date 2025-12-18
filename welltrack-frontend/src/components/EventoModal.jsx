@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import EtiquetaFilter from "./EtiquetaFilter"; 
 
 const etiquetasDisponibles = ["evento", "tarea", "trabajo", "cumpleaños", "personal"];
@@ -89,8 +90,8 @@ export default function EventoModal({ token, evento, onClose, onGuardar, diaSele
   if (modo === "detalle") {
     const yaPaso = new Date(evento.start) < new Date(new Date().setHours(0, 0, 0, 0));
 
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+    return createPortal (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[100]">
         <div className="bg-[#F1EADE] rounded-3xl p-6 w-96 shadow-xl border border-[#E8DCC9] text-[#5A534A]">
 
           <h3 className="text-2xl font-semibold mb-4 text-[#4b433c]">
@@ -145,13 +146,14 @@ export default function EventoModal({ token, evento, onClose, onGuardar, diaSele
             </button>
           </div>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
 
- return (
-  <div className="fixed inset-0 flex items-start justify-center bg-black/50 z-50 pt-24">
+ return createPortal(
+  <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[100] pt-24">
     <div className="bg-[#F1EADE] rounded-3xl p-5 w-[480px] shadow-xl border border-[#E8DCC9] text-[#5A534A]">
 
       <h3 className="text-xl font-semibold mb-3 text-[#4b433c]">
@@ -266,7 +268,8 @@ export default function EventoModal({ token, evento, onClose, onGuardar, diaSele
       </div>
 
     </div>
-  </div>
+  </div>,
+  document.body
 );
 
 }
