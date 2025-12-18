@@ -16,10 +16,6 @@ export default function Comunidad() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  // -----------------------
-  // 📌 CARGA DE DATOS
-  // -----------------------
-
   const cargarPosts = async () => {
     const res = await fetch("http://127.0.0.1:8000/api/comunidad/posts", {
       headers: { Authorization: `Bearer ${token}` },
@@ -69,9 +65,6 @@ const cargarActividad = async () => {
   setActividad(data); 
 };
 
-  // -----------------------
-  // 📌 Cargar todo al iniciar
-  // -----------------------
 
   useEffect(() => {
     cargarPosts();
@@ -81,10 +74,6 @@ const cargarActividad = async () => {
     cargarUsuariosRecientes();
     cargarActividad();
   }, []);
-
-  // -----------------------
-  // 📌 Crear post
-  // -----------------------
 
   const crearPost = async () => {
     if (!nuevoPost.trim()) return;
@@ -102,9 +91,6 @@ const cargarActividad = async () => {
     cargarPosts();
   };
 
-  // -----------------------
-  // 📌 Like
-  // -----------------------
 
   const toggleLike = async (idPost) => {
     await fetch(`http://127.0.0.1:8000/api/comunidad/posts/${idPost}/like`, {
@@ -115,27 +101,18 @@ const cargarActividad = async () => {
     cargarPosts();
   };
 
-// ======================
-  // PALETA TIERRA (Definición local para este componente)
-  // ======================
   const COLORES = {
     fondoPagina: "#F7F5EF",
-    textoTitulo: "#121F15", // Dark Jungle
-    textoSubtitulo: "#866b46", // Khaki medium
-    textoOscuro: "#463b20", // Khaki dark
-    bordeSuave: "#dfd4b9", // Bone/Beige border
-    
-    // Acciones
-    primario: "#58a774", // Jungle Green
+    textoTitulo: "#121F15", 
+    textoSubtitulo: "#866b46",
+    textoOscuro: "#463b20",
+    bordeSuave: "#dfd4b9",
+    primario: "#58a774", 
     primarioHover: "#46865d",
-    
-    // Fondos
     bgCard: "#ffffff",
     bgInput: "#ffffff",
-    bgActiveNav: "#eef6f1", // Usado para items de lista, fondos suaves
+    bgActiveNav: "#eef6f1",
     bgHover: "#f7f4ee",
-    
-    // UI Elements
     avatarText: "#356445"
   };
 
@@ -146,17 +123,12 @@ const cargarActividad = async () => {
         
       >
 
-        {/* -------------------------------- */}
-        {/* IZQUIERDA */}
-        {/* -------------------------------- */}
         <div className="hidden lg:flex flex-col gap-6 col-span-1">
 
-          {/* Usuarios recientes / Nuevos miembros */}
           <div 
             className="p-5 rounded-3xl shadow-sm border"
             style={{ backgroundColor: COLORES.bgCard, borderColor: COLORES.bordeSuave }}
           >
-            {/* CAMBIO 1: Título más acorde a la lógica (últimos registrados) */}
             <h3 className="font-semibold mb-1" style={{ color: COLORES.textoTitulo }}>Nuevos miembros</h3>
             <p className="text-xs mb-4" style={{ color: COLORES.textoSubtitulo }}>¡Dales la bienvenida!</p>
 
@@ -177,7 +149,6 @@ const cargarActividad = async () => {
                   <div className="flex flex-col">
                     <span className="text-sm" style={{ color: COLORES.textoOscuro }}>{u.nombreUsuario}</span>
                     
-                    {/* CAMBIO 2: Texto genérico pero real */}
                     <span className="text-xs" style={{ color: COLORES.textoSubtitulo }}>
                       Se unió recientemente
                     </span>
@@ -187,7 +158,6 @@ const cargarActividad = async () => {
             </ul>
           </div>
 
-          {/* Preguntas & Consejos */}
           <div 
             className="p-5 rounded-3xl shadow-sm border"
             style={{ backgroundColor: COLORES.bgCard, borderColor: COLORES.bordeSuave }}
@@ -211,7 +181,6 @@ const cargarActividad = async () => {
             ))}
           </div>
 
-          {/* Tendencias */}
           <div 
             className="p-5 rounded-3xl shadow-sm border"
             style={{ backgroundColor: COLORES.bgCard, borderColor: COLORES.bordeSuave }}
@@ -233,7 +202,6 @@ const cargarActividad = async () => {
             </div>
           </div>
 
-          {/* Comunidad activa */}
           <div 
             className="p-5 rounded-3xl shadow-sm border"
             style={{ backgroundColor: COLORES.bgCard, borderColor: COLORES.bordeSuave }}
@@ -256,14 +224,7 @@ const cargarActividad = async () => {
 
         </div>
 
-
-
-        {/* -------------------------------- */}
-        {/* CENTRO — FEED */}
-        {/* -------------------------------- */}
         <div className="col-span-1 lg:col-span-2 space-y-6">
-
-          {/* Crear post */}
           <div 
             className="p-5 rounded-3xl shadow-sm border"
             style={{ backgroundColor: COLORES.bgCard, borderColor: COLORES.bordeSuave }}
@@ -304,7 +265,6 @@ const cargarActividad = async () => {
             </div>
           </div>
 
-          {/* Feed */}
           {posts.map((post) => (
             <div
               key={post.idPost}
@@ -360,11 +320,6 @@ const cargarActividad = async () => {
           ))}
         </div>
 
-
-
-        {/* -------------------------------- */}
-        {/* DERECHA — panel*/}
-        {/* -------------------------------- */}
         <div className="hidden lg:flex flex-col gap-6 col-span-1">
 
           {/* Actividad reciente */}
