@@ -47,38 +47,33 @@ export default function HabitosPage2() {
   const [panelAbierto, setPanelAbierto] = useState(false);
 
   function normalizarFecha(fechaString) {
-    // Forzamos a interpretar la fecha como LOCAL, no UTC
     const [y, m, d] = fechaString.split("-");
-    return new Date(y, m - 1, d) // <-- new Date(año, mesIndex, día)
-      .toLocaleDateString("en-CA"); // lo convierte a YYYY-MM-DD
+    return new Date(y, m - 1, d) 
+      .toLocaleDateString("en-CA"); 
   }
 
   const seleccionarHabito = async (h) => {
-    setHabitoSeleccionado(null); // Limpia antes de recargar
+    setHabitoSeleccionado(null); 
 
     try {
-      // 📊 Obtener progreso de hoy
       const resProg = await fetch(
         `http://127.0.0.1:8000/api/habitos/${h.idHabito}/hoy`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const prog = await resProg.json();
 
-      // 📅 Obtener historial
       const resHist = await fetch(
         `http://127.0.0.1:8000/api/habitos/${h.idHabito}/historial`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const dataHist = await resHist.json();
 
-      // 🧠 NUEVO BLOQUE: verificar si el hábito es de hoy
       const hoy = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
       const ultimaFecha = h.fechaUltimoRegistro
         ? normalizarFecha(h.fechaUltimoRegistro)
         : null;
       const esDeHoy = ultimaFecha === hoy;
 
-      // Si el hábito no es de hoy → reset visual
       const progresoFinal = esDeHoy
         ? prog
         : {
@@ -88,7 +83,6 @@ export default function HabitosPage2() {
             unidad: h.unidad,
           };
 
-      // 🔁 Aplicar todo al estado
       setHabitoSeleccionado({
         ...h,
         progreso: progresoFinal,
@@ -101,7 +95,6 @@ export default function HabitosPage2() {
     }
   };
 
-  // 🧩 Obtener hábitos
   useEffect(() => {
     const fetchHabitos = async () => {
       try {
@@ -113,7 +106,6 @@ export default function HabitosPage2() {
         if (!res.ok)
           throw new Error(data.mensaje || "Error al obtener hábitos");
 
-        // 🟢 Traer racha global
         const resRacha = await fetch(
           "http://127.0.0.1:8000/api/racha-global/hoy",
           {
@@ -127,7 +119,6 @@ export default function HabitosPage2() {
           maxima: dataRacha.rachaMaxima,
         });
 
-        // 🧠 1) Traer progreso de HOY para cada hábito
         const habitosConProgreso = await Promise.all(
           data.registros.map(async (h) => {
             try {
@@ -177,31 +168,6 @@ export default function HabitosPage2() {
           })
         );
 
-        // 🗓️ 2) Obtener historial de los últimos 7 días
-        // const habitosConProgresoEHistorial = await Promise.all(
-        //   habitosConProgreso.map(async (h) => {
-        //     try {
-        //       const qDesde = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000)
-        //         .toISOString()
-        //         .slice(0, 10);
-        //       const qHasta = new Date().toISOString().slice(0, 10);
-        //       const url = `http://127.0.0.1:8000/api/registro-habito/${h.idHabito}?desde=${qDesde}&hasta=${qHasta}`;
-
-        //       const resp = await fetch(url, {
-        //         headers: { Authorization: `Bearer ${token}` },
-        //       });
-        //       const hist = await resp.json();
-
-        //       return resp.ok
-        //         ? { ...h, historial7d: hist.historial || [] }
-        //         : { ...h, historial7d: [] };
-        //     } catch {
-        //       return { ...h, historial7d: [] };
-        //     }
-        //   })
-        // );
-
-        // 🌅 3) Reset visual si el último registro no es de hoy
         const hoy = new Date().toLocaleDateString("en-CA");
 
         const habitosConProgresoNormalizado = habitosConProgreso.map((h) => {
@@ -210,7 +176,6 @@ export default function HabitosPage2() {
             : null;
           const esDeHoy = ultimaFecha === hoy;
 
-          // 🔥 Si no es de hoy, se fuerza un "reset visual"
           return {
             ...h,
             progreso: {
@@ -218,7 +183,6 @@ export default function HabitosPage2() {
               cumplido: esDeHoy ? h.progreso?.cumplido ?? false : false,
               meta: h.meta,
               unidad: h.unidad,
-              // 👇 Agregamos explícitamente la fecha dentro del progreso (opcional pero útil)
               fechaUltimoRegistro: h.fechaUltimoRegistro,
             },
             rachaActual: h.rachaActual,
@@ -230,7 +194,6 @@ export default function HabitosPage2() {
 
         setHabitos(habitosConProgresoNormalizado);
 
-        // Si el usuario ya tiene un hábito seleccionado, actualizalo también
         setHabitoSeleccionado((prev) => {
           if (!prev) return prev;
           const actualizado = habitosConProgresoNormalizado.find(
@@ -239,8 +202,6 @@ export default function HabitosPage2() {
           return actualizado || prev;
         });
 
-        // ✅ 4) Guardar en estado
-        // setHabitos(habitosConProgresoNormalizado);
         console.log("📊 Hábitos cargados:", habitosConProgresoNormalizado);
       } catch (err) {
         setMensaje(err.message);
@@ -252,7 +213,6 @@ export default function HabitosPage2() {
     fetchHabitos();
   }, [token]);
 
-  // 🔁 Cada vez que se recarga la página, mostrar el progreso de hoy correctamente
   useEffect(() => {
     if (habitos.length > 0) {
       console.log(
@@ -265,8 +225,7 @@ export default function HabitosPage2() {
       );
     }
   }, [habitos]);
-
-  // ➕ Crear / Editar hábito
+  
   const guardarHabito = async () => {
     try {
       const url = modoEdicion
@@ -310,7 +269,6 @@ export default function HabitosPage2() {
     }
   };
 
-  // 🗑️ Eliminar hábito
   const eliminarHabito = async (id) => {
     if (!confirm("¿Seguro que querés eliminar este hábito?")) return;
 
@@ -341,14 +299,13 @@ export default function HabitosPage2() {
     }
   };
 
-  // ✅ Guardar progreso del día
   const guardarProgreso = async () => {
     try {
       const valor = Number(habitoSeleccionado.valorTemp);
       if (!valor || valor <= 0)
         return alert("Ingresá un valor válido para tu progreso.");
 
-      // 📤 Enviar progreso
+
       const res = await fetch(
         `http://127.0.0.1:8000/api/habitos/${habitoSeleccionado.idHabito}/registrar`,
         {
@@ -374,15 +331,7 @@ export default function HabitosPage2() {
       );
 
       const dataHist = await resHist.json();
-
-      // setHabitoSeleccionado((prev) => ({
-      //   ...prev,
-      //   historial: dataHist.historial,
-      // }));
-
       
-
-      // ✅ Actualizar hábito seleccionado
       setHabitoSeleccionado((prev) => ({
         ...prev,
         progreso: {
@@ -400,7 +349,6 @@ export default function HabitosPage2() {
         valorTemp: "",
       }));
 
-      // ✅ Actualizar lista
       setHabitos((prev) =>
         prev.map((h) =>
           h.idHabito === habitoSeleccionado.idHabito
@@ -424,7 +372,7 @@ export default function HabitosPage2() {
         )
       );
 
-      // ✅ Actualizar racha global (independiente del hábito)
+
       setRachaGlobal({
         actual: data.rachaGlobalActual ?? 0,
         maxima: data.rachaGlobalMaxima ?? 0,
@@ -435,7 +383,7 @@ export default function HabitosPage2() {
         data.rachaGlobalMaxima
       );
 
-      // 🎉 Mensaje visual (en lugar del alert)
+
       if (data.cumplido) {
         setFelicitacion("🎉 ¡Objetivo cumplido!");
       } else {
@@ -447,59 +395,6 @@ export default function HabitosPage2() {
       alert("❌ " + err.message);
     }
   };
-
-  // 🔥 Simulación de racha (por ahora aleatoria)
-  //   const obtenerRacha = (h) => {
-  //     return h.racha || Math.floor(Math.random() * 8);
-  //   };
-
-  //   useEffect(() => {
-  //     if (habitos.length === 0) return;
-
-  //     const todosCompletos =
-  //       habitos.length > 0 &&
-  //       habitos.every((h) => h.progreso && h.progreso.cumplido);
-
-  //     if (todosCompletos) {
-  //       setFelicitacion("🌞 ¡Completaste todos tus hábitos del día!");
-  //       // 💫 (opcional) activar confeti visual
-  //       lanzarConfeti();
-
-  //       // Ocultar mensaje luego de 4s
-  //       setTimeout(() => setFelicitacion(""), 4000);
-  //     }
-  //   }, [habitos]);
-
-  // 🎉 Overlay de felicitación global (centrado)
-  //   const OverlayFelicitacion = () => (
-  //     <AnimatePresence>
-  //       {felicitacion && felicitacion.includes("todos") && (
-  //         <motion.div
-  //           className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-[999]"
-  //           initial={{ opacity: 0 }}
-  //           animate={{ opacity: 1 }}
-  //           exit={{ opacity: 0 }}
-  //           transition={{ duration: 0.4 }}
-  //         >
-  //           <motion.div
-  //             className="bg-white/90 text-green-800 rounded-3xl shadow-2xl p-10 text-center max-w-md mx-4 border border-green-200"
-  //             initial={{ scale: 0.8, opacity: 0 }}
-  //             animate={{ scale: 1, opacity: 1 }}
-  //             exit={{ scale: 0.8, opacity: 0 }}
-  //             transition={{ duration: 0.4 }}
-  //           >
-  //             <h2 className="text-3xl font-bold mb-4">🌞 ¡Día completado!</h2>
-  //             <p className="text-lg mb-2">
-  //               ¡Completaste todos tus hábitos de hoy! 🌿💪
-  //             </p>
-  //             <p className="text-sm text-gray-500 italic">
-  //               Seguí así, tu constancia te acerca a tus metas ✨
-  //             </p>
-  //           </motion.div>
-  //         </motion.div>
-  //       )}
-  //     </AnimatePresence>
-  //   );
 
   if (loading) return <Loader loading={true} />;
 
@@ -516,7 +411,6 @@ export default function HabitosPage2() {
       <div className="min-h-screen w-full p-4 md:p-8">
           
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
-        {/* 📋 Lista de hábitos */}
         <aside className="w-full md:w-1/3 p-6 border-r border-[#E8DCC9] rounded-3xl bg-white/60 backdrop-blur-sm shadow-sm">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-[#121F15]">
@@ -589,7 +483,6 @@ export default function HabitosPage2() {
           )}
         </aside>
 
-        {/* 🌞 Resumen diario de progreso */}
         {habitos.length > 0 && (
           <div className="bg-white border border-[#E8DCC9] shadow-sm rounded-2xl py-5 px-8 mb-8 flex flex-col items-center gap-8 md:gap-10">
             {/* {(() => {
@@ -667,7 +560,7 @@ export default function HabitosPage2() {
           </div>
         )}
 
-        {/* 🧠 Panel derecho */}
+
         <main className="flex-grow p-10 mr-4 rounded-3xl" style={{ backgroundColor: "transparent" }}>
           {!habitoSeleccionado ? (
             <div className="text-center text-[#866b46] mt-10">
@@ -688,7 +581,7 @@ export default function HabitosPage2() {
                 transition={{ duration: 0.4 }}
                 className="bg-white rounded-3xl shadow-lg p-10 max-w-2xl mx-auto border border-[#E8DCC9]"
               >
-                {/* 🏷️ Encabezado */}
+              
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-3xl font-bold text-[#121F15] flex items-center gap-2">
                     🌿 {habitoSeleccionado.nombre}
@@ -705,14 +598,14 @@ export default function HabitosPage2() {
                   </span>
                 </div>
 
-                {/* 📝 Descripción */}
+               
                 {habitoSeleccionado.descripcion && (
                   <p className="text-[#463b20] mb-6 leading-relaxed">
                     {habitoSeleccionado.descripcion}
                   </p>
                 )}
 
-                {/* 🎯 Meta */}
+              
                 <div className="bg-[#F7F5EF] border border-[#E8DCC9] rounded-xl p-4 mb-6">
                   <p className="text-[#121F15] font-semibold">
                     🎯 Meta diaria: {habitoSeleccionado.meta}{" "}
@@ -722,7 +615,7 @@ export default function HabitosPage2() {
                   </p>
                 </div>
 
-                {/* 📈 Barra de progreso */}
+               
                 <div className="mb-6">
                   <h4 className="text-md font-semibold text-[#121F15] mb-2">
                     Progreso de hoy
@@ -748,7 +641,7 @@ export default function HabitosPage2() {
                   </p>
                 </div>
 
-                {/* 🔥 Racha */}
+
                 <div className="mb-6">
                   <h4 className="text-md font-semibold text-[#121F15] mb-2">
                     Racha actual 🔥
@@ -766,10 +659,8 @@ export default function HabitosPage2() {
                     ))}
                 </div> */}
 
-                  {/* 🔥 Cuadraditos de racha (últimos 7 días) */}
                   <div className="flex gap-1 justify-center mt-3">
                     {(() => {
-                      // Últimos 7 días (de más antiguo a más reciente)
                       const hoy = new Date();
                       hoy.setHours(0, 0, 0, 0);
                       const ultimos7 = Array.from({ length: 7 }).map((_, i) => {
@@ -778,7 +669,6 @@ export default function HabitosPage2() {
                         return d.toISOString().slice(0, 10);
                       });
 
-                      // Generar los cuadrados (🟩 cumplido, ⬜ no cumplido)
                       return ultimos7.map((fecha, i) => {
                         const diaHist = habitoSeleccionado.historial?.find(
                           (d) => d.fecha === fecha
@@ -798,21 +688,16 @@ export default function HabitosPage2() {
                       });
                     })()}
                   </div>
-                  {/* <p className="text-sm text-gray-500 mt-1 text-center">
-                    {habitoSeleccionado.rachaActual ?? 0} días seguidos 🌿
-                  </p> */}
 
                   <p className="text-sm text-[#866b46] mt-1 text-center">
                     {habitoSeleccionado.rachaActual !== undefined ? habitoSeleccionado.rachaActual : 0}{" "} días seguidos 🌿
                   </p>
-
 
                   <p className="mt-3 text-xs text-[#866b46] text-center opacity-70">
                     Mejor racha: {habitoSeleccionado.rachaMaxima ?? 0} 🔥
                   </p>
                 </div>
 
-                {/* 📊 Input de progreso */}
                 <div className="flex items-center gap-2 mb-4">
                   <input
                     type="number"
@@ -832,7 +717,6 @@ export default function HabitosPage2() {
                   </span>
                 </div>
 
-                {/* 🧩 Botón de acción */}
                 <button
                   onClick={guardarProgreso}
                   className="w-full mt-2 text-white py-3 rounded-xl hover:scale-[1.03] transition font-semibold shadow-sm"
@@ -842,7 +726,6 @@ export default function HabitosPage2() {
             
                 </button>
 
-                {/* 🎉 Mensaje de felicitación */}
                 {felicitacion && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -860,7 +743,6 @@ export default function HabitosPage2() {
           )}
         </main>
 
-        {/* ➕ Modal */}
         <AnimatePresence>
           {mostrarFormulario && (
             <motion.div
@@ -880,7 +762,7 @@ export default function HabitosPage2() {
                 }}
                 className="bg-white rounded-3xl shadow-xl w-full max-w-md p-6 md:p-8 relative border border-[#E8DCC9]"
               >
-                {/* ✖ Cerrar */}
+                
                 <button
                   onClick={() => setMostrarFormulario(false)}
                   className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
@@ -888,7 +770,7 @@ export default function HabitosPage2() {
                   ✖
                 </button>
 
-                {/* 🌿 Título */}
+                
                 <h3
                   className="text-2xl font-bold mb-5 text-center"
                   style={{ color: modoEdicion ? "#3b82f6" : "#121F15" }}
@@ -896,7 +778,7 @@ export default function HabitosPage2() {
                   {modoEdicion ? "Editar hábito ✏️" : "Nuevo hábito 🌱"}
                 </h3>
 
-                {/* Nombre */}
+                
                 <input
                   type="text"
                   placeholder="Nombre del hábito"
@@ -908,7 +790,7 @@ export default function HabitosPage2() {
                   style={{ borderColor: "#E8DCC9", "--tw-ring-color": "#bcdcc7" }}
                 />
 
-                {/* Descripción */}
+                
                 <textarea
                   placeholder="Descripción (opcional)"
                   value={nuevoHabito.descripcion}
@@ -922,7 +804,7 @@ export default function HabitosPage2() {
                   style={{ borderColor: "#E8DCC9", "--tw-ring-color": "#bcdcc7" }}
                 />
 
-                {/* Frecuencia */}
+               
                 <div className="mb-4">
                   <label className="text-[#866b46] text-sm font-medium block mb-1">
                     Frecuencia
@@ -944,7 +826,7 @@ export default function HabitosPage2() {
                   </select>
                 </div>
 
-                {/* Meta y unidad */}
+                
                 <div className="flex gap-2 mb-4">
                   <input
                     type="number"
@@ -976,7 +858,7 @@ export default function HabitosPage2() {
                   </select>
                 </div>
 
-                {/* Botones */}
+                
                 <div className="flex justify-end gap-3 mt-6">
                   <button
                     onClick={() => setMostrarFormulario(false)}
@@ -999,7 +881,7 @@ export default function HabitosPage2() {
         </AnimatePresence>
       </div>
       </div>
-      {/* <OverlayFelicitacion /> */}
+      
     </Layout>
     </>
   );
