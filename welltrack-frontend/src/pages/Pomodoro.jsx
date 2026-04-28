@@ -20,7 +20,9 @@ const IMAGENES_INSIGNIAS = {
 };
 
 
-const API_URL = "http://127.0.0.1:8000/api";
+//const API_URL = "http://127.0.0.1:8000/api";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
 
 // Modos y duraciones por defecto (en minutos)
 const DEFAULT_CONFIG = {
